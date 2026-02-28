@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 import joblib
 import pandas as pd
 from pydantic import BaseModel
@@ -27,19 +27,13 @@ def home():
 def predict(features: WineFeatures):
     data = pd.DataFrame([features.dict()])
 
-    data = data.rename(columns={
-        "fixed_acidity": "fixed acidity",
-        "volatile_acidity": "volatile acidity",
-        "citric_acid": "citric acid",
-        "residual_sugar": "residual sugar",
-        "free_sulfur_dioxide": "free sulfur dioxide",
-        "total_sulfur_dioxide": "total sulfur dioxide"
-    })
+    data.columns = [
+        'fixed acidity', 'volatile acidity', 'citric acid', 'residual sugar',
+        'chlorides', 'free sulfur dioxide', 'total sulfur dioxide', 'density',
+        'pH', 'sulphates', 'alcohol'
+    ]
 
-    try:
-        prediction = model.predict(data)
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+    prediction = model.predict(data)
 
     return {
         "name": "Shashank Upadhyay", 
